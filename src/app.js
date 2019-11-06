@@ -1,6 +1,6 @@
 const express = require('express');
 const exphbs = require('express-handlebars');
-const { resolve } = require('path');
+const { resolve, join } = require('path');
 
 const routes = require('./routes');
 
@@ -15,19 +15,23 @@ class App {
 
   setupEngine() {
     const hbs = exphbs.create({
-      defaultLayout: 'main'
+      defaultLayout: 'main',
+      extname: '.hbs',
+      layoutsDir: resolve(__dirname, 'views', 'layouts'),
+      partialsDir: resolve(__dirname, 'views', 'partials')
     })
 
     // define views folder
-    this.server.set('views', resolve(__dirname, './views'));
+    this.server.set('views', resolve(__dirname, 'views'));
 
     // register handlebars view engine
-    this.server.engine('handlebars', hbs.engine);
-    this.server.set('view engine', 'handlebars')
+    this.server.engine('.hbs', hbs.engine);
+    this.server.set('view engine', '.hbs')
   }
 
   middlewares() {
     this.server.use(express.json())
+    this.server.use(express.static(resolve(__dirname, '..', 'public')))
   }
 
   routes() {
